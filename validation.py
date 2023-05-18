@@ -145,7 +145,7 @@ def main(parser_data):
             pred = model(imgs)[0]  # only get inference result
             t2 = torch_utils.time_synchronized()
             print(t2 - t1)
-            pred = non_max_suppression(pred, conf_thres=0, iou_thres=0.5, multi_label=False)
+            pred = non_max_suppression(pred, conf_thres=0.01, iou_thres=0.5, multi_label=False)
             outputs = []
             for index, p in enumerate(pred):
                 if p is None:
@@ -202,7 +202,7 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cuda:0', help='device')
     parser.add_argument('--num-classes', type=int, default='10', help='number of classes')
 
-    parser.add_argument('--cfg', type=str, default='cfg/MCDET2new.cfg', help="*.cfg path")
+    parser.add_argument('--cfg', type=str, default='cfg/MCDet.cfg', help="*.cfg path")
     parser.add_argument('--data', type=str, default='data/my_data.data', help='*.data path')
     parser.add_argument('--hyp', type=str, default='cfg/hyp.yaml', help='hyperparameters path')
     parser.add_argument('--img-size', type=int, default=416, help='test size')

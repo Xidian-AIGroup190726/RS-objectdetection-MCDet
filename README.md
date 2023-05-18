@@ -87,6 +87,10 @@ in_channels=1024
 out_channels=1024
 ```
 
+## 7 Eval and Predicet
+* Run ```validation.py``` for Eval
+* Run ```predict_test.py``` for Predicet
+
 ## Reference
 * This project is based on YOLOv3
 * [WZMIAOMIAO/yolov3](https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_object_detection/yolov3_spp)

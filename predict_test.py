@@ -14,11 +14,10 @@ from PIL import Image
 
 
 def main():
-    img_size = 416  # 必须是32的整数倍 [416, 512, 608]
-    cfg = "cfg/MCDET2new.cfg"  # 改成生成的.cfg文件
-    #weights = "weights/20221025-150523.txtbest.pt"  # 改成自己训练好的权重文件
-    weights = "weights/20230509-113944.txtbest.pt"  # 改成自己训练好的权重文件
-    json_path = "./data/pascal_voc_classes.json"  # json标签文件
+    img_size = 416
+    cfg = "cfg/MCDet.cfg"
+    weights = "weights/20230509-113944.txtbest.pt"
+    json_path = "./data/pascal_voc_classes.json"
     img_path = "./my_yolo_dataset/train/images/000373.jpg"
     assert os.path.exists(cfg), "cfg file {} dose not exist.".format(cfg)
     assert os.path.exists(weights), "weights file {} dose not exist.".format(weights)

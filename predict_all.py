@@ -22,7 +22,7 @@ img_names = os.listdir(dir_origin_path)
 
 def main():
     img_size = 416
-    cfg = "cfg/MCDET2new.cfg"
+    cfg = "cfg/MCDet.cfg"
     weights = "weights/20230509-113944.txtbest.pt"
     json_path = "./data/pascal_voc_classes.json"
     assert os.path.exists(cfg), "cfg file {} dose not exist.".format(cfg)
@@ -36,7 +36,7 @@ def main():
 
     input_size = (img_size, img_size)
 
-    device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     model = Darknet(cfg, img_size)
     model.load_state_dict(torch.load(weights, map_location=device)["model"])
@@ -70,8 +70,6 @@ def main():
                 #print(t2 - t1)
 
                 pred = utils.non_max_suppression(pred, conf_thres=0.35, iou_thres=0.5, multi_label=True)[0]
-                #t3 = time.time()
-                #print(t3 - t2)
 
                 if pred is not None:
                     # process detections

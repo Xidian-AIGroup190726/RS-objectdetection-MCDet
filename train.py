@@ -27,6 +27,7 @@ def train(hyp):
     data = opt.data
     epochs = opt.epochs
     batch_size = opt.batch_size
+    # mini-batch setting #*****************************
     accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 64)
     weights = opt.weights  # initial training weights
     imgsz_train = opt.img_size
@@ -38,8 +39,8 @@ def train(hyp):
     assert math.fmod(imgsz_test, gs) == 0, "--img-size %g must be a %g-multiple" % (imgsz_test, gs)
     grid_min, grid_max = imgsz_test // gs, imgsz_test // gs
     if multi_scale:
-        imgsz_min = 384
-        imgsz_max = 448
+        imgsz_min = opt.img_size // 1.2
+        imgsz_max = opt.img_size // 0.833
 
         grid_min, grid_max = imgsz_min // gs, imgsz_max // gs
         imgsz_min, imgsz_max = int(grid_min * gs), int(grid_max * gs)

@@ -16,7 +16,7 @@ voc_version = "VOC2007"
 
 # 转换的训练集以及验证集对应txt文件
 train_txt = "train.txt"
-val_txt = "test.txt"
+val_txt = "val.txt"
 
 # 转换后的文件保存目录
 save_file_root = "./my_yolo_dataset"
