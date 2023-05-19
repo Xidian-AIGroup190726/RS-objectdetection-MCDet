@@ -71,9 +71,9 @@ classes_label = "./data/my_data_label.names"
 parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--batch-size', type=int, default=8)
 parser.add_argument('--cfg', type=str, default='cfg/MCDet.cfg', help="*.cfg path")
-parser.add_argument('--img-size', type=int, default=416, help='test size')
+parser.add_argument('--img-size', type=int, default=512, help='test size')
 # mini-batch setting #
-accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 64)
+accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 8)
 ```
 * If you want to modify the setting of SCR and SSP in MCDet,
 you can adjust the followings in ```MCDet.cfg```,
