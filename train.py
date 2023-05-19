@@ -28,7 +28,7 @@ def train(hyp):
     epochs = opt.epochs
     batch_size = opt.batch_size
     # mini-batch setting #*****************************
-    accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 64)
+    accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 8)
     weights = opt.weights  # initial training weights
     imgsz_train = opt.img_size
     imgsz_test = opt.img_size  # test image sizes
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     parser.add_argument('--hyp', type=str, default='cfg/hyp.yaml', help='hyperparameters path')
     parser.add_argument('--multi-scale', type=bool, default=False,
                         help='adjust (67%% - 150%%) img_size every 10 batches')
-    parser.add_argument('--img-size', type=int, default=416, help='test size')
+    parser.add_argument('--img-size', type=int, default=512, help='test size')
     parser.add_argument('--rect', action='store_true', help='rectangular training')
     parser.add_argument('--savebest', type=bool, default=True, help='only save best checkpoint')
     parser.add_argument('--notest', action='store_true', help='only test final epoch')

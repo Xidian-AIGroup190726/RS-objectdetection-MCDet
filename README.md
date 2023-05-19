@@ -60,20 +60,23 @@ classes_label = "./data/my_data_label.names"
 ```
 
 ## 5 Pre-training weights download (download and place in weights folder):
-* ```yolov3-spp-ultralytics-416.pt```: link: https://pan.baidu.com/s/1cK3USHKxDx-d5dONij52lA  code: r3vm
+* ```yolov3-spp-ultralytics-416.pt```: link: https://pan.baidu.com/s/1njDcQRmKq_bv_UpLshhIXQ  code: phbr 
+* or ```yolov3-spp-ultralytics-416.pt```: link: https://pan.baidu.com/s/1cK3USHKxDx-d5dONij52lA  code: r3vm
  
 
 ## 6 Train
 * Run ```train.py```
-* The following parameters can be adjusted
+* The following parameters can be adjusted in ```train.py```
 ```python
 parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--batch-size', type=int, default=8)
 parser.add_argument('--cfg', type=str, default='cfg/MCDet.cfg', help="*.cfg path")
 parser.add_argument('--img-size', type=int, default=416, help='test size')
+# mini-batch setting #
+accumulate = max(round(8 / batch_size), 1)  # accumulate n times before optimizer update (bs 64)
 ```
 * If you want to modify the setting of SCR and SSP in MCDet,
-please adjust the followings in ```MCDet.cfg```.
+you can adjust the followings in ```MCDet.cfg```,
 ```python
 [Shallow_Clue_Refinement] # SCR module
 kernel_size=3
@@ -85,6 +88,14 @@ out_channels=512
 [self_dilating_Pooling] # SSP module
 in_channels=1024
 out_channels=1024
+```
+or the followings in ```models.py```.
+```python
+# Shallow Clue Refinement (SCR)
+class Shallow_Clue_Refinement(nn.Module):
+
+#self_dilating_Pooling
+class self_dilating_Pooling(nn.Module): 
 ```
 
 ## 7 Eval and Predicet
