@@ -241,7 +241,7 @@ class Darknet(nn.Module):
             elif name == "YOLOLayer":
                 yolo_out.append(module(x))
             else:
-                if i == 76 or i == 89 or i == 103:
+                if i == 76 or i == 88 or i == 101:
                     x, att_mask = module(x)
                     mask.append(att_mask)
                 else:
@@ -292,25 +292,15 @@ class Shallow_Clue_Refinement(nn.Module):
         self.stride = stride
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.down_out_channels = in_channels*2//16
+        self.down_out_channels = in_channels*2//16 # 16 is the setting of n
         self.padding = padding
-        self.K = nn.Conv2d(in_channels=self.in_channels, out_channels=self.out_channels, kernel_size=1, stride=1,padding=0)
-        self.G = nn.Conv2d(in_channels=self.in_channels, out_channels=self.down_out_channels, kernel_size=1, stride=1,
-                           padding=0)
+        self.H = nn.Conv2d(in_channels=self.in_channels, out_channels=self.out_channels, kernel_size=1, stride=1,padding=0)
+        self.G = nn.Conv2d(in_channels=self.in_channels * 2, out_channels=self.down_out_channels,
+                           kernel_size=1, stride=1, padding=0)
 
         self.MaxPololing = nn.MaxPool2d(self.kernel_size, self.stride, self.padding)
         self.BN = nn.BatchNorm2d(self.out_channels)
-        self.downsample = 1
-        self.BN1 = nn.BatchNorm2d(1)
-        self.leakyRelu = nn.LeakyReLU()
         self.Relu = nn.ReLU()
-
-        self.KSANetconv = nn.Conv2d(in_channels=self.in_channels * 2, out_channels=self.down_out_channels,
-                                    kernel_size=1, stride=1,
-                                    padding=0)
-        self.QSANetconv = nn.Conv2d(in_channels=self.in_channels*2, out_channels=self.down_out_channels, kernel_size=1, stride=1,
-                                    padding=0)
-
         self.sigmoid = nn.Sigmoid()
     def forward(self, x):
         shallowFeaturemap = x[0]
@@ -318,7 +308,7 @@ class Shallow_Clue_Refinement(nn.Module):
 
         Batch_size, Channel, Height, Width = shallowFeaturemap.size()
 
-        max_out = self.KSANetconv(deepFeaturemap)
+        max_out = self.G(deepFeaturemap)
         h = int(Height / self.stride)
         w = int(Width / self.stride)
         max_out1, _ = torch.max(max_out, dim=-3)
@@ -335,15 +325,14 @@ class Shallow_Clue_Refinement(nn.Module):
         Q_Unfold_window = torch.unsqueeze(Q_Unfold_window,4).permute(0, 2, 3, 1, 4).contiguous()
         Q_Unfold_window = Q_Unfold_window.expand(Batch_size, int(Height*Width/4), self.out_channels, self.down_out_channels, 1)
 
-        K_x = self.K(shallowFeaturemap)
+        K_x = self.H(shallowFeaturemap)
         K_Unfold = f.unfold(K_x, kernel_size=self.kernel_size, dilation=1, padding=self.padding, stride=self.stride)
         K_Unfold = K_Unfold.view(Batch_size, self.out_channels, -1, int(Height / self.stride * Width / self.stride)).contiguous()
         K_Unfold_window = torch.unsqueeze(K_Unfold,4).permute(0, 3, 1, 4, 2).contiguous()
 
         attention_map = torch.matmul(Q_Unfold_window, K_Unfold_window)
         attention_map = torch.squeeze(torch.mean(attention_map, dim=-2), dim=-2)
-        new_kernel = torch.softmax(attention_map,
-                                   dim=-1)
+        new_kernel = self.Relu(torch.sigmoid(attention_map)-0.5)
 
         K_Unfold = K_Unfold.permute(0, 3, 1, 2).contiguous()
         attention_map = torch.sum((new_kernel* K_Unfold),dim=-1).permute(0, 2, 1)
@@ -453,9 +442,3 @@ class self_dilating_Pooling(nn.Module):  # 20220814-100131 93.4*40 #double route
             select_pooling = torch.index_select(x.view(b * c, h, w).float(), 0, select)
             tiny_dict.update({str(int(maxpool)): select_pooling})
         return tiny_dict, mix_select
-
-class self_dilating_Pooling0(nn.Module):
-    def __init__(self, in_channels, out_channels, initialkernel=1, maxkernel=13, clazz=10):
-        super(self_dilating_Pooling, self).__init__()
-    def forward(self, x):
-        return x
